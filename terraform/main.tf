@@ -1,3 +1,42 @@
+# EFS
+# Add EFS security group
+resource "aws_security_group" "efs" {
+  name        = "factorio-efs-sg"
+  description = "Security group for EFS mount targets"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 2049
+    to_port         = 2049
+    protocol        = "tcp"
+    security_groups = [aws_security_group.instance.id]
+  }
+
+  tags = {
+    Name = "factorio-efs-sg"
+  }
+}
+
+# Create EFS file system
+resource "aws_efs_file_system" "factorio" {
+  creation_token = "factorio-data"
+  encrypted      = true
+
+  tags = {
+    Name = "factorio-efs"
+  }
+}
+
+# Create mount target for EFS
+resource "aws_efs_mount_target" "factorio" {
+  file_system_id  = aws_efs_file_system.factorio.id
+  subnet_id       = aws_subnet.public.id
+  security_groups = [aws_security_group.efs.id]
+}
+
+
+
+# EC2 Config
 resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
@@ -108,7 +147,16 @@ resource "aws_instance" "factorio" {
     Name = "factorio-server"
   }
 
-  depends_on = [aws_internet_gateway.main]
+  depends_on = [
+    aws_internet_gateway.main,
+    aws_efs_mount_target.factorio
+    ]
+}
+
+# Add EFS DNS name to outputs
+output "efs_dns_name" {
+  value       = aws_efs_file_system.factorio.dns_name
+  description = "EFS DNS name"
 }
 
 output "public_ip" {
