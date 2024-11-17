@@ -60,7 +60,7 @@ sed -i "s/\$FACTORIO_USERNAME/$FACTORIO_USERNAME/g" server-settings.json
 sed -i "s/\$FACTORIO_PASSWORD/$FACTORIO_PASSWORD/g" server-settings.json
 sed -i "s/\$GAME_PASSWORD/$GAME_PASSWORD/g" server-settings.json
 
-./factorio/bin/x64/factorio --create saves/boy-save.zip --map-gen-settings ./efs/mnt/my-map-gen-settings.json --map-settings ./efs/mnt/my-map-settings.json
+./factorio/bin/x64/factorio --create saves/boy-save.zip --map-gen-settings ./efs/mnt/map-gen-settings.json --map-settings ./efs/mnt/map-settings.json
 
 # reboot so the profile.d script we just created will be run
 reboot
