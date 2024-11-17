@@ -142,6 +142,10 @@ resource "aws_instance" "factorio" {
     volume_size = 30
     volume_type = "gp3"
   }
+  # Reference external script file
+  user_data = templatefile("${path.module}/scripts/user_data.sh", {
+    efs_dns_name = aws_efs_file_system.factorio.dns_name
+  })
 
   tags = {
     Name = "factorio-server"
