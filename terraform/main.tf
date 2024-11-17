@@ -1,3 +1,48 @@
+# Secrets manager
+# Create IAM role for EC2
+resource "aws_iam_role" "factorio_role" {
+  name = "factorio-server-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# Create IAM policy for Secrets Manager access
+resource "aws_iam_role_policy" "secrets_policy" {
+  name = "factorio-secrets-policy"
+  role = aws_iam_role.factorio_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = ["arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq"]
+      }
+    ]
+  })
+}
+
+# Create instance profile
+resource "aws_iam_instance_profile" "factorio_profile" {
+  name = "factorio-server-profile"
+  role = aws_iam_role.factorio_role.name
+}
+
+
 # EFS
 # Add EFS security group
 resource "aws_security_group" "efs" {
@@ -137,7 +182,8 @@ resource "aws_instance" "factorio" {
   subnet_id     = aws_subnet.public.id
 
   vpc_security_group_ids = [aws_security_group.instance.id]
-  
+  iam_instance_profile = aws_iam_instance_profile.factorio_profile.name
+
   root_block_device {
     volume_size = 30
     volume_type = "gp3"
@@ -145,6 +191,8 @@ resource "aws_instance" "factorio" {
   # Reference external script file
   user_data = templatefile("${path.module}/scripts/user_data.sh", {
     efs_dns_name = aws_efs_file_system.factorio.dns_name
+    secret_arn   = "arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq"
+    aws_region   = "us-east-1"
   })
 
   tags = {

@@ -2,14 +2,13 @@
 # Log all output
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
+
 # Update system
-apt-get update
-apt-get upgrade -y
+apt update
+apt upgrade -y
 
 # Install required packages for EFS
-apt-get install -y \
-    nfs-common \
-    amazon-efs-utils
+apt install -y nfs-common jq awscli
 
 # Create mount directory
 mkdir -p /mnt/efs
@@ -20,6 +19,28 @@ mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=
 # Make mount permanent
 echo "${efs_dns_name}:/ /mnt/efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 0 0" >> /etc/fstab
 
+# Fetch secrets and set environment variables
+SECRET_JSON=$(aws secretsmanager get-secret-value \
+    --secret-id ${secret_arn} \
+    --region ${aws_region} \
+    --query SecretString \
+    --output text)
+
+# Extract the values from the secret
+FACTORIO_USERNAME=$(echo "$SECRET_JSON" | jq -r '.FACTORIO_USERNAME')
+FACTORIO_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.FACTORIO_PASSWORD')
+GAME_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.GAME_PASSWORD')
+
+# Create the env file with the actual values
+cat << EOF > /etc/profile.d/factorio-env.sh
+export FACTORIO_USERNAME=$FACTORIO_USERNAME
+export FACTORIO_PASSWORD=$FACTORIO_PASSWORD
+export GAME_PASSWORD=$GAME_PASSWORD
+EOF
+
+# Make it executable
+chmod a+x /etc/profile.d/factorio-env.sh
+
 # Set permissions
 chown -R ubuntu:ubuntu /mnt/efs
 
@@ -28,4 +49,14 @@ cd /mnt/efs
 wget -O linux64.tar.xz https://factorio.com/get-download/stable/headless/linux64
 tar -xf linux64.tar.xz
 
+wget https://raw.githubusercontent.com/mittonface/factorio-server-manager/refs/heads/main/terraform/scripts/server-settings.json
+
 echo "Setup completed at $(date)" > /tmp/setup-completed.txt
+
+# Replace the variables in server-settings.json with actual values
+sed -i "s/\$FACTORIO_USERNAME/$FACTORIO_USERNAME/g" server-settings.json
+sed -i "s/\$FACTORIO_PASSWORD/$FACTORIO_PASSWORD/g" server-settings.json
+sed -i "s/\$GAME_PASSWORD/$GAME_PASSWORD/g" server-settings.json
+
+# reboot so the profile.d script we just created will be run
+reboot
