@@ -12,6 +12,8 @@ apt install -y nfs-common jq awscli git binutils rustc cargo pkg-config libssl-d
 
 # Add the Player Monitoring Script
 wget https://raw.githubusercontent.com/mittonface/factorio-server-manager/refs/heads/main/terraform/scripts/player_monitor.py
+chmod +x player_monitor.py
+mv player-monitor.py /usr/local/bin/factorio-player-monitor.py
 
 
 # Manually installed EFS Utils
@@ -100,6 +102,25 @@ Restart=on-failure
 RestartSec=10
 StandardOutput=append:/var/log/factorio/factorio.log
 StandardError=append:/var/log/factorio/factorio-error.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create service for player monitor
+cat << 'EOF' > /etc/systemd/system/factorio-player-monitor.service
+[Unit]
+Description=Factorio Player Monitor
+After=factorio.service
+Requires=factorio.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+ExecStart=/usr/local/bin/player_monitor.py
+Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
