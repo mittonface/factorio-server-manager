@@ -61,20 +61,21 @@ resource "aws_security_group" "factorio" {
   description = "Security group for Factorio server"
   vpc_id      = aws_vpc.main.id
 
+  # Game traffic and server listing (UDP + TCP)
   ingress {
     from_port   = 34197
     to_port     = 34197
     protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Factorio game port"
+    description = "Factorio game port (UDP)"
   }
 
   ingress {
-    from_port   = 27015
-    to_port     = 27015
+    from_port   = 34197
+    to_port     = 34197
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Additional server port"
+    description = "Factorio server listing port (TCP)"
   }
 
   egress {
@@ -208,9 +209,10 @@ resource "aws_ecs_task_definition" "factorio" {
           valueFrom = "arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq:FACTORIO_USERNAME::"
         },
         {
-          name = "TOKEN"
-          valueFrom = "arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq:FACTORIO_TOKEN::"
+          name = "FACTORIO_PASSWORD"
+          valueFrom = "arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq:FACTORIO_PASSWORD::"
         },
+
         {
           name = "SERVER_PASSWORD"
           valueFrom = "arn:aws:secretsmanager:us-east-1:009960124252:secret:factorio-server-credentials-0vrhaq:GAME_PASSWORD::"

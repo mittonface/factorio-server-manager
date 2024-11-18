@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 factoriotools/factorio
+FROM --platform=linux/amd64 factoriotools/factorio:stable
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 COPY ./server/map-settings.json /factorio/config/map-settings.json

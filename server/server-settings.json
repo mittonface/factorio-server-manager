@@ -17,10 +17,10 @@
   
     "_comment_credentials": "Your factorio.com login credentials. Required for games with visibility public",
     "username": "$FACTORIO_USERNAME",
-    "password": "",
+    "password": "$FACTORIO_PASSWORD",
   
     "_comment_token": "Authentication token. May be used instead of 'password' above.",
-    "token": "$FACTORIO_TOKEN",
+    "token": "",
   
     "game_password": "$SERVER_PASSWORD",
   

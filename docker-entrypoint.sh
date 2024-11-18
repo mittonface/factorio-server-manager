@@ -10,7 +10,7 @@ BIND="${BIND:-""}"
 CONSOLE_LOG_LOCATION="${CONSOLE_LOG_LOCATION:-""}"
 
 sed -i "s/\$FACTORIO_USERNAME/$USERNAME/g" /factorio/config/server-settings.json
-sed -i "s/\$FACTORIO_TOKEN/$TOKEN/g" /factorio/config/server-settings.json
+sed -i "s/\$FACTORIO_PASSWORD/$FACTORIO_PASSWORD/g" /factorio/config/server-settings.json
 sed -i "s/\$SERVER_PASSWORD/$SERVER_PASSWORD/g" /factorio/config/server-settings.json
 
 mkdir -p "$FACTORIO_VOL"
