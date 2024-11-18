@@ -9,6 +9,11 @@ apt upgrade -y
 # Install required packages for EFS
 apt install -y nfs-common jq awscli git binutils rustc cargo pkg-config libssl-dev
 
+
+# Add the Player Monitoring Script
+wget https://raw.githubusercontent.com/mittonface/factorio-server-manager/refs/heads/main/terraform/scripts/player_monitor.py
+
+
 # Manually installed EFS Utils
 git clone https://github.com/aws/efs-utils
 cd efs-utils
@@ -46,6 +51,11 @@ chmod a+x /etc/profile.d/factorio-env.sh
 
 # Set permissions
 chown -R ubuntu:ubuntu /mnt/efs
+
+# Setup log directory
+mkdir -p /var/log/factorio
+chown ubuntu:ubuntu /var/log/factorio
+
 
 # Download and extract Factorio
 cd /mnt/efs
@@ -88,8 +98,8 @@ WorkingDirectory=/mnt/efs
 ExecStart=/mnt/efs/factorio/bin/x64/factorio --start-server-load-latest --server-settings /mnt/efs/server-settings.json
 Restart=on-failure
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
+StandardOutput=append:/var/log/factorio/factorio.log
+StandardError=append:/var/log/factorio/factorio-error.log
 
 [Install]
 WantedBy=multi-user.target
