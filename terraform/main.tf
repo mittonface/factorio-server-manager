@@ -1,5 +1,3 @@
-# main.tf
-
 provider "aws" {
   region = "us-east-1"  # Changed to match your secret's region
 }
@@ -71,6 +69,14 @@ resource "aws_security_group" "factorio" {
     description = "Factorio game port"
   }
 
+  ingress {
+    from_port   = 27015
+    to_port     = 27015
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Additional server port"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -128,6 +134,7 @@ resource "aws_iam_role_policy" "secrets_policy" {
     ]
   })
 }
+
 # Create CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "factorio" {
   name              = "/ecs/factorio"
@@ -173,6 +180,11 @@ resource "aws_ecs_task_definition" "factorio" {
           containerPort = 34197
           hostPort      = 34197
           protocol      = "udp"
+        },
+        {
+          containerPort = 27015
+          hostPort      = 27015
+          protocol      = "tcp"
         }
       ]
       essential = true
@@ -187,7 +199,7 @@ resource "aws_ecs_task_definition" "factorio" {
         },
         {
           name  = "SERVER_NAME"
-          value = "Server for Good Boys"
+          value = "Server for Pretty Special Boys"
         }
       ]
       secrets = [
