@@ -65,6 +65,10 @@ export async function POST(req: Request) {
           ParameterKey: "FactorioImageTag",
           ParameterValue: "stable",
         },
+        {
+          ParameterKey: "KeyPairName",
+          ParameterValue: "factorio-key-pair",
+        },
       ],
       // Include Capabilities if your stack requires them
       Capabilities: ["CAPABILITY_IAM"],
