@@ -12,6 +12,7 @@
     "@aws-sdk/client-cloudformation": "^3.696.0",
     "@aws-sdk/client-ecs": "^3.697.0",
     "aws-sdk": "^2.1692.0",
+    "lucide-react": "^0.460.0",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106"

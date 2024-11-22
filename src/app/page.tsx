@@ -1,13 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
+import { Sparkles, Zap, Coffee, Cloud, Skull } from "lucide-react";
 
 export default function Home() {
   const [status, setStatus] = useState("stopped");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [bounce, setBounce] = useState(false);
 
   const handleAction = async (action: "start" | "stop") => {
+    setBounce(true);
+    setTimeout(() => setBounce(false), 1000);
     setLoading(true);
     setMessage("");
     try {
@@ -39,10 +43,8 @@ export default function Home() {
         .catch((error) => setMessage("Failed to fetch status"));
     };
 
-    // Initial check
     checkStatus();
 
-    // Poll every 10 seconds when status is "working"
     const interval = setInterval(() => {
       if (status === "working") {
         checkStatus();
@@ -52,47 +54,59 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [status]);
 
-  const getStatusColor = () => {
+  const getStatusIcon = () => {
     switch (status) {
       case "running":
-        return "bg-green-600";
+        return <Zap className="animate-pulse text-yellow-400" size={24} />;
       case "working":
-        return "bg-yellow-400";
+        return <Coffee className="animate-bounce text-brown-600" size={24} />;
       default:
-        return "bg-red-600";
+        return <Skull className="animate-spin-slow text-red-600" size={24} />;
     }
   };
 
+  const funnyStatusMessages = {
+    running: "The server is currently online. 🏭.",
+    working: "Don't hit any buttons, something is happening. ⚠️",
+    stopped: "The server is currently offline. 😴",
+  };
+
   return (
-    <main className="min-h-screen p-8 bg-gray-100">
-      <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900">
-          Factorio Server for Cool Hot Boys
-        </h1>
-        <div className="mb-4 flex items-center gap-2">
-          <div
-            className={`w-3 h-3 rounded-full ${getStatusColor()}`}
-            aria-hidden="true"
-          />
-          <span className="capitalize text-gray-900">Status: {status}</span>
+    <main className="min-h-screen p-8 bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100">
+      <div
+        className={`max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg border-4 border-dashed border-purple-300 transform transition-transform duration-300 ${
+          bounce ? "scale-105" : "scale-100"
+        }`}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
+            Factorio Server for Cool Hot Boys
+          </h1>
+          <Sparkles className="text-yellow-400 animate-pulse" />
         </div>
 
-        {/* New Connection Info Section */}
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+        <div className="mb-4 flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+          {getStatusIcon()}
+          <span className="capitalize text-gray-900 font-medium">
+            {funnyStatusMessages[status as keyof typeof funnyStatusMessages]}
+          </span>
+        </div>
+
+        <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-dotted border-blue-200 transform hover:scale-102 transition-transform">
+          <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+            <Cloud className="text-blue-400" />
             How to Connect
           </h2>
           <p className="text-gray-700 mb-2">
             Look for &quot;Bunch of Nerds&quot; in the Factorio public game
-            browser to join the server. The password is known to you.
+            browser. Use the same password as below.
           </p>
-          <p className="text-gray-700 italic">
-            Note: After clicking &quot;Start Server&quot;, please allow
-            approximately 5 minutes for the server to fully start up.
+          <p className="text-gray-700 italic animate-pulse">
+            It will take a 2-3 minutes for the server to get up and running.
           </p>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <label
             htmlFor="password"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -102,47 +116,52 @@ export default function Home() {
           <input
             id="password"
             type="password"
-            placeholder="Enter password"
+            placeholder="🤫 Enter the sacred text"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 border border-gray-300 text-gray-900 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-2 border-2 border-dashed border-purple-200 text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
           />
         </div>
+
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => handleAction("start")}
             disabled={loading || status === "running" || status === "working"}
-            className={`flex-1 py-2 px-4 rounded font-medium focus:ring-2 focus:ring-offset-2
+            className={`flex-1 py-2 px-4 rounded-lg font-medium focus:ring-2 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105
               ${
                 loading || status === "running" || status === "working"
                   ? "bg-gray-400 text-gray-100 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500"
+                  : "bg-gradient-to-r from-green-400 to-blue-500 text-white hover:from-green-500 hover:to-blue-600 focus:ring-blue-500"
               }`}
           >
-            Start Server
+            🚀 Start Server
           </button>
           <button
             onClick={() => handleAction("stop")}
             disabled={loading || status === "stopped" || status === "working"}
-            className={`flex-1 py-2 px-4 rounded font-medium focus:ring-2 focus:ring-offset-2
+            className={`flex-1 py-2 px-4 rounded-lg font-medium focus:ring-2 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105
               ${
                 loading || status === "stopped" || status === "working"
                   ? "bg-gray-400 text-gray-100 cursor-not-allowed"
-                  : "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500"
+                  : "bg-gradient-to-r from-red-400 to-pink-500 text-white hover:from-red-500 hover:to-pink-600 focus:ring-red-500"
               }`}
           >
-            Stop Server
+            💤 Stop Server
           </button>
         </div>
+
         {message && (
           <div
-            className={`p-4 rounded border ${
+            className={`p-4 rounded-lg border-2 transform transition-all duration-300 ${
               message.includes("error") || message.includes("failed")
-                ? "bg-red-50 text-red-800 border-red-200"
-                : "bg-blue-50 text-blue-800 border-blue-200"
+                ? "bg-red-50 text-red-800 border-red-200 animate-shake"
+                : "bg-blue-50 text-blue-800 border-blue-200 animate-bounce-gentle"
             }`}
             role="alert"
           >
+            {message.includes("error") || message.includes("failed")
+              ? "🚨 "
+              : "✨ "}
             {message}
           </div>
         )}
