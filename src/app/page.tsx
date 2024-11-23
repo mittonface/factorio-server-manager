@@ -116,7 +116,7 @@ export default function Home() {
           <input
             id="password"
             type="password"
-            placeholder="🤫 Enter the sacred text"
+            placeholder="🤫 Super secret"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full p-2 border-2 border-dashed border-purple-200 text-gray-900 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
