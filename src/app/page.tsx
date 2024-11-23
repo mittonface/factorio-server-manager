@@ -87,7 +87,7 @@ export default function Home() {
 
         <div className="mb-4 flex items-center gap-2 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
           {getStatusIcon()}
-          <span className="capitalize text-gray-900 font-medium">
+          <span className="text-gray-900 font-medium">
             {funnyStatusMessages[status as keyof typeof funnyStatusMessages]}
           </span>
         </div>
