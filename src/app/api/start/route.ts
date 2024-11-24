@@ -76,6 +76,14 @@ export async function POST(req: Request) {
           ParameterKey: "YourIp",
           ParameterValue: process.env.MY_IP,
         },
+        {
+          ParameterKey: "HostedZoneId",
+          ParameterValue: "Z091363238C0X14Z9ZIRH",
+        },
+        {
+          ParameterKey: "RecordName",
+          ParameterValue: "factorio.brent.click",
+        },
       ],
       // Include Capabilities if your stack requires them
       Capabilities: ["CAPABILITY_IAM"],
