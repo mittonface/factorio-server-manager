@@ -81,6 +81,10 @@ export async function POST(req: Request) {
           ParameterKey: "RecordName",
           ParameterValue: "factorio.brent.click",
         },
+        {
+          ParameterKey: "EnableRcon",
+          ParameterValue: "true",
+        },
       ],
       // Include Capabilities if your stack requires them
       Capabilities: ["CAPABILITY_IAM"],
