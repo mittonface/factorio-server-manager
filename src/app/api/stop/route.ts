@@ -85,6 +85,10 @@ export async function POST(req: Request) {
           ParameterKey: "EnableRcon",
           ParameterValue: "true",
         },
+        {
+          ParameterKey: "InstanceType",
+          ParameterValue: "r6in.large",
+        },
       ],
       // Include Capabilities if your stack requires them
       Capabilities: ["CAPABILITY_IAM"],
