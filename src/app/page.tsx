@@ -50,7 +50,12 @@ export default function Home() {
           "https://factorio-status-009960124252.s3.us-east-1.amazonaws.com/status.json"
         );
         const data = await response.json();
-        setPlayerStatus(data.status);
+        // Replace empty player message with custom text
+        setPlayerStatus(
+          data.status.includes("Online players (0):")
+            ? "Nobody is manning the factory."
+            : data.status
+        );
       } catch (error) {
         console.error("Failed to fetch player status:", error);
       }
@@ -111,7 +116,7 @@ export default function Home() {
           </span>
         </div>
 
-        {playerStatus && (
+        {status === "running" && playerStatus && (
           <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-dotted border-green-200">
             <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <Users className="text-green-500" />
