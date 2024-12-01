@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Sparkles, Zap, Coffee, Cloud, Skull } from "lucide-react";
+import { Sparkles, Zap, Coffee, Skull, Users, Cloud } from "lucide-react";
 
 export default function Home() {
   const [status, setStatus] = useState("stopped");
@@ -8,6 +8,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [bounce, setBounce] = useState(false);
+  const [playerStatus, setPlayerStatus] = useState("");
 
   const handleAction = async (action: "start" | "stop") => {
     setBounce(true);
@@ -43,15 +44,33 @@ export default function Home() {
         .catch((error) => setMessage("Failed to fetch status"));
     };
 
-    checkStatus();
+    const fetchPlayerStatus = async () => {
+      try {
+        const response = await fetch(
+          "https://factorio-status-009960124252.s3.us-east-1.amazonaws.com/status.json"
+        );
+        const data = await response.json();
+        setPlayerStatus(data.status);
+      } catch (error) {
+        console.error("Failed to fetch player status:", error);
+      }
+    };
 
-    const interval = setInterval(() => {
+    checkStatus();
+    fetchPlayerStatus();
+
+    const statusInterval = setInterval(() => {
       if (status === "working") {
         checkStatus();
       }
     }, 10000);
 
-    return () => clearInterval(interval);
+    const playerStatusInterval = setInterval(fetchPlayerStatus, 30000);
+
+    return () => {
+      clearInterval(statusInterval);
+      clearInterval(playerStatusInterval);
+    };
   }, [status]);
 
   const getStatusIcon = () => {
@@ -91,6 +110,18 @@ export default function Home() {
             {funnyStatusMessages[status as keyof typeof funnyStatusMessages]}
           </span>
         </div>
+
+        {playerStatus && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border-2 border-dotted border-green-200">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              <Users className="text-green-500" />
+              Current Players
+            </h2>
+            <p className="text-gray-700 font-mono whitespace-pre-line">
+              {playerStatus}
+            </p>
+          </div>
+        )}
 
         <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border-2 border-dotted border-blue-200 transform hover:scale-102 transition-transform">
           <h2 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
