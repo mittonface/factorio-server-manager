@@ -6,6 +6,7 @@ resource "aws_lambda_function" "factorio_spot_handler" {
   handler         = "announce_shutdown.lambda_handler"
   runtime         = "python3.9"
   timeout         = 30
+  source_code_hash = filebase64sha256("shutdown_lambda_function.zip")
 
   environment {
     variables = {
@@ -25,7 +26,7 @@ resource "aws_lambda_function" "factorio_online_check" {
   handler         = "online_players.lambda_handler"
   runtime         = "python3.9"
   timeout         = 2
-  source_code_hash = filebase64sha256("shutdown_lambda_function.zip")
+  source_code_hash = filebase64sha256("online_players_lambda_function.zip")
 
 
   environment {
