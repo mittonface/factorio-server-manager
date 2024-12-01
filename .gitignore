@@ -48,3 +48,5 @@ next-env.d.ts
 **/.terraform/
 **.lock.hcl
 **/shutdown_lambda_function.zip
+**/online_players_lambda_function.zip
+**.tfstate**
