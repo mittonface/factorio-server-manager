@@ -37,7 +37,8 @@ def lambda_handler(event, context):
         )
         
         # Send warning message and save the game
-        client.send_command("Server about to shut down because of spot instance pricing")
+        client.send_command("Server about to shut down because of spot instance pricing.")
+        client.send_command("It will come back online in 2-3 minutes. Find new instance in public server listing.")
         client.send_command("/server-save")
         
         return {
