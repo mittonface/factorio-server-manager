@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bunch of Nerds Factorio Server Control Panel
 
-## Getting Started
+A web-based control panel for managing our private Factorio game server running on AWS infrastructure. This project uses spot instances to minimize costs while providing a reliable gaming experience for our group.
 
-First, run the development server:
+**Current Instance**: [https://factorio.mittn.ca](https://factorio.mittn.ca)
+
+> **Note**: This project is specifically built for the Bunch of Nerds Factorio server and contains hardcoded values and configurations. It's not designed to be a reusable solution for other Factorio servers.
+
+## Overview
+
+This project provides our group with a simple web interface to start and stop our Factorio game server hosted on AWS. It includes features such as:
+
+- Server status monitoring
+- Current player tracking
+- Graceful shutdown handling for spot instances
+- Password-protected server controls
+- Real-time status updates
+
+## Technology Stack
+
+### Frontend
+
+- **Next.js 15.0** - React framework for the web interface
+- **React 19.0** - UI component library
+- **TailwindCSS 3.4** - Utility-first CSS framework
+- **Lucide React** - Icon library
+- **Geist Font** - Typography
+
+### Backend
+
+- **AWS SDK** - For interacting with AWS services
+- **Python 3.9** - Lambda function runtime
+- **Factorio RCON** - For game server communication
+
+### AWS Services
+
+- **ECS** - Container orchestration for the Factorio server
+- **Lambda** - Serverless functions for status checks and shutdown handling
+- **CloudFormation** - Infrastructure as Code
+- **EventBridge** - Scheduled tasks and spot instance interruption handling
+- **S3** - Storage for server status data
+- **Secrets Manager** - Secure credential storage
+
+### Infrastructure
+
+- **Terraform** - Infrastructure as Code
+- **Make** - Build automation
+
+## Architecture
+
+The system consists of several components:
+
+1. **Web Interface**: A Next.js application that provides server controls and status monitoring
+2. **Status Lambda**: Checks player status every minute and updates S3
+3. **Shutdown Handler**: Gracefully handles spot instance interruptions
+4. **CloudFormation Stack**: Manages the Factorio server infrastructure
+
+## Local Development
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create a `.env` file with required AWS credentials and configuration:
+
+   - SERVER_PASSWORD
+   - ACCESS_KEY
+   - SECRET_KEY
+   - MY_IP
+
+3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Lambda Functions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build Lambda Functions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+make build-shutdown-lambda
+make build-online-lambda
+```
 
-## Learn More
+### Deploy Infrastructure
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd infrastructure
+terraform init
+terraform apply
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Security
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Server access is password-protected
+- AWS credentials are managed through environment variables
+- RCON password is stored in AWS Secrets Manager
+- S3 bucket is configured with appropriate CORS and public access settings
 
-## Deploy on Vercel
+## Important Note
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project contains hardcoded values specific to our setup, including:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- AWS account IDs
+- Domain names (brent.click)
+- Bucket names
+- Secret ARNs
+- Hosted zone IDs
