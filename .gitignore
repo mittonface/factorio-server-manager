@@ -38,3 +38,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# lambda function
+**/package/
+
+# terraform
+*.tfstate
+**/.terraform/
+**.lock.hcl
+**/shutdown_lambda_function.zip
