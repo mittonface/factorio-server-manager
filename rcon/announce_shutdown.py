@@ -4,19 +4,13 @@ import boto3
 import factorio_rcon
 
 def lambda_handler(event, context):
-    # Extract instance information from the CloudWatch Event
     try:
+        # Extract instance information from the CloudWatch Event
         detail = event['detail']
         instance_id = detail['instance-id']
-        state = detail['state']
         
-        # Only proceed if this is a termination notice
-        if state != 'interrupted':
-            print(f"Not a termination event. State: {state}")
-            return {
-                'statusCode': 200,
-                'body': 'Not a termination event'
-            }
+        # For spot interruption warnings, we don't need to check state
+        # The event will only trigger for interruption warnings based on the EventBridge rule
         
         # Get RCON password from Secrets Manager
         secrets_client = boto3.client('secretsmanager')
@@ -40,6 +34,8 @@ def lambda_handler(event, context):
         client.send_command("Server about to shut down because of spot instance pricing.")
         client.send_command("It will come back online in 2-3 minutes. Find new instance in public server listing.")
         client.send_command("/server-save")
+        
+        print(f"Successfully handled spot interruption for instance {instance_id}")
         
         return {
             'statusCode': 200,
