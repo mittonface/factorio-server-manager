@@ -24,7 +24,7 @@ resource "aws_lambda_function" "factorio_online_check" {
   role            = aws_iam_role.lambda_role.arn
   handler         = "online_players.lambda_handler"
   runtime         = "python3.9"
-  timeout         = 30
+  timeout         = 2
   source_code_hash = filebase64sha256("shutdown_lambda_function.zip")
 
 
